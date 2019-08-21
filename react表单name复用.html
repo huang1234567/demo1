@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>react表单name复用</title>
+    <script src="../react.js"></script>
+    <script src="../react-dom.js"></script>
+    <script src="http://cdn.bootcss.com/babel-core/5.8.38/browser.min.js"></script>
+</head>
+<body>
+    <div id="demo">
+    </div>
+    <script type="text/babel">
+    /*name复用方式直接读取表单的属性值，比bind写法少一个参数（React中事件响应函数会自动绑定this）。其原理是在所有的标签中设置统一的name属性，并将这个属性值对应为state属性，在事件响应函数中通过读取表单的name值获得state属性，从event.target.value获取用户输入的值（check控件稍有不同），要求所有相关的标签（包括input标签）都要统一设置name属性。–引用《React前端技术与工程实践》*/
+
+
+    /* 表单元素 value/checked 一定要绑定 */
+        var MyFrom=React.createClass({
+            getInitialState:function(){
+                return{
+                    username:'',
+                    gender:'man',
+                    checked:true
+                }
+            },
+            handleChange:function(event){
+                var newState={};
+                console.log(event.target.name)
+                newState[event.target.name]=event.target.name=="checked"?event.target.checked:event.target.value;
+                this.setState(newState);
+                console.log(newState);
+            },
+            submitHandler:function(e){
+                e.preventDefault();
+                var is=this.state.checked?'是':'不是';
+                var gender=this.state.gender=='man'?'帅哥':'美女';
+                alert(this.state.username+is+gender+'-');
+            },
+            render:function(){
+                return(<form>
+                <label htmlFor="username">名字</label>
+                <input type="text" name="username" onChange={this.handleChange} value={this.state.username}/>
+                <br/>
+                <label htmlFor="checkbox">是否</label>
+                <input type="checkbox" name="checked" onChange={this.handleChange} checked={this.state.checked}/>
+                <br/>
+                <label htmlFor="gender">性别</label>
+                <select name="gender" name="gender" value={this.state.gender} onChange={this.handleChange}>
+                    <option value="man">帅哥</option>
+                    <option value="woman">美女</option>
+                </select>
+                <br/>
+                <input type="button" value="提交" onClick={this.submitHandler}/>
+                    </form>)
+            }
+        })
+
+        ReactDOM.render(
+            <MyFrom/>,
+            document.getElementById("demo")
+        )
+    </script>
+</body>
+</html>
